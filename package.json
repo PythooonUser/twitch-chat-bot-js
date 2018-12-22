@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/PythooonUser/twitch-chat-bot-js/issues"
   },
-  "homepage": "https://github.com/PythooonUser/twitch-chat-bot-js#readme"
+  "homepage": "https://github.com/PythooonUser/twitch-chat-bot-js#readme",
+  "dependencies": {
+    "tmi.js": "^1.2.1"
+  }
 }
