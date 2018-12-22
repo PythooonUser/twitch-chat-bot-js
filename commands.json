@@ -1,0 +1,9 @@
+[
+    {
+        "name": "twitter",
+        "message": "Find on Twitter @username",
+        "author": "username",
+        "public": true,
+        "active": true
+    }
+]
