@@ -1,0 +1,19 @@
+{
+  "name": "twitch-chat-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PythooonUser/twitch-chat-bot-js.git"
+  },
+  "author": "Felix Siebeneicker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PythooonUser/twitch-chat-bot-js/issues"
+  },
+  "homepage": "https://github.com/PythooonUser/twitch-chat-bot-js#readme"
+}
