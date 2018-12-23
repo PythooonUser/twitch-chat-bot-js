@@ -8,11 +8,10 @@ let CommandManager = (function() {
 
     let loadCommands = function() {
         commands = require(commandDatabasePath);
-        console.log(commands);
     };
 
     let saveCommands = function() {
-        fs.writeFile(commandDatabasePath, JSON.stringify(commands), (err) => {});
+        fs.writeFile(commandDatabasePath, JSON.stringify(commands, null, 4) + "\n", (err) => {});
     };
 
     let getCommand = function(name) {
