@@ -93,13 +93,15 @@ client.on("chat", function(channel, userstate, message, self) {
                 return;
             }
 
+            let messageIndex = "!add".length + newCommandName.length + 2;
+
             if (newCommandName.startsWith("!")) {
                 newCommandName = newCommandName.substr(1);
             }
 
             newCommandName = newCommandName.toLowerCase();
 
-            let newCommandMessage = message.substr(5 + newCommandName.length);
+            let newCommandMessage = message.substr(messageIndex);
             if (!newCommandMessage) {
                 client.say(channel, "Usage: !add name message");
                 return;
@@ -112,7 +114,7 @@ client.on("chat", function(channel, userstate, message, self) {
                 return;
             }
 
-            CommandManager.addCommand("!" + newCommandName, newCommandMessage, userstate["username"]);
+            CommandManager.addCommand(newCommandName, newCommandMessage, userstate["username"]);
             client.say(channel, "@" + userstate["display-name"] + " Your command has been added and can now be used!");
             break;
 
