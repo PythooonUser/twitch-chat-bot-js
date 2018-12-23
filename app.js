@@ -16,14 +16,19 @@ let CommandManager = (function() {
     };
 
     let getCommand = function(name) {
-        commands = [];
-        commands = commands.concat(commandsBase);
-        commands = commands.concat(commandsStream);
-        for (let i = 0; i < commands.length; i++) {
-            if (commands[i].name === name) {
-                return commands[i];
+        for (let i = 0; i < commandsBase.length; i++) {
+            if (commandsBase[i].name === name) {
+                return [commandsBase[i], "base"];
             }
         }
+
+        for (let i = 0; i < commandsStream.length; i++) {
+            if (commandsStream[i].name === name) {
+                return [commandsStream[i], "stream"];
+            }
+        }
+
+        return [undefined, undefined];
     };
 
     let getCommands = function() {
@@ -93,6 +98,11 @@ let handleAddCommand = function(channel, userstate, message) {
 
     commandName = commandName.toLowerCase();
 
+    if (["hello", "add", "remove", "commands", "disconnect"].includes(commandName)) {
+        client.say(channel, "@" + userstate["display-name"] + " This command already exists!");
+        return;
+    }
+
     let commandMessage = message.substr(messageIndex);
     if (!commandMessage) {
         client.say(channel, "Usage: !add name message");
@@ -122,9 +132,18 @@ let handleRemoveCommand = function(channel, userstate, message) {
     }
 
     commandNameToRemove = commandNameToRemove.toLowerCase();
-    commandToRemove = CommandManager.getCommand("!" + commandNameToRemove);
+    let [commandToRemove, commandToRemoveType] = CommandManager.getCommand("!" + commandNameToRemove);
     if (!commandToRemove) {
+        if (["hello", "add", "remove", "commands", "disconnect"].includes(commandNameToRemove)) {
+            client.say(channel, "@" + userstate["display-name"] + " This command cannot be removed!");
+            return;
+        }
+
         client.say(channel, "@" + userstate["display-name"] + " This command does not exist! Try out !commands to see a list of all available commands!");
+        return;
+    }
+    if (commandToRemoveType === "base") {
+        client.say(channel, "@" + userstate["display-name"] + " This command cannot be removed!");
         return;
     }
     if (commandToRemove.author !== userstate["username"]) {
@@ -132,7 +151,7 @@ let handleRemoveCommand = function(channel, userstate, message) {
         return;
     }
 
-    CommandManager.removeCommand("!" + commandNameToRemove);
+    CommandManager.removeCommand(commandToRemove.name);
     client.say(channel, "@" + userstate["display-name"] + " Your command has been removed!");
 };
 
@@ -188,7 +207,9 @@ client.on("chat", function(channel, userstate, message, self) {
             break;
 
         default:
-            let command = CommandManager.getCommand(commandName);
+            let command;
+            let commandType;
+            [command, commandType] = CommandManager.getCommand(commandName);
             if (!command) {
                 return;
             }
