@@ -155,6 +155,12 @@ let handleDisconnectCommand = function(channel, userstate) {
     }
 };
 
+let handleHelloCommand = function(channel, userstate) {
+    let greeting = config.greetings[Math.floor(Math.random() * config.greetings.length)];
+    greeting = greeting.replace(/\{name\}/, userstate["display-name"]);
+    client.say(channel, greeting);
+};
+
 client.on("chat", function(channel, userstate, message, self) {
     if (self) { return; };
     if (!message.startsWith("!")) { return; };
@@ -175,6 +181,10 @@ client.on("chat", function(channel, userstate, message, self) {
 
         case "!commands":
             handleCommandsCommand(channel);
+            break;
+
+        case "!hello":
+            handleHelloCommand(channel, userstate);
             break;
 
         default:
