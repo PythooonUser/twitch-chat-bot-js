@@ -98,7 +98,7 @@ let handleAddCommand = function(channel, userstate, message) {
 
     commandName = commandName.toLowerCase();
 
-    if (["hello", "add", "remove", "commands", "disconnect"].includes(commandName)) {
+    if (["hello", "add", "remove", "commands", "disconnect", "info"].includes(commandName)) {
         client.say(channel, "@" + userstate["display-name"] + " This command already exists!");
         return;
     }
@@ -156,15 +156,13 @@ let handleRemoveCommand = function(channel, userstate, message) {
 };
 
 let handleCommandsCommand = function(channel) {
-    let commandNames = [];
-    CommandManager.getCommands().sort(
-        (a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)
-    ).forEach(command => {
+    let commandNames = ["!hello", "!add", "!remove", "!commands", "!disconnect", "!info"];
+    CommandManager.getCommands().forEach(command => {
         if (command.active && command.public) {
             commandNames.push(command.name);
         }
     });
-    client.say(channel, "Available commands: " + commandNames.join(", "));
+    client.say(channel, "Available commands: " + commandNames.sort().join(", "));
 };
 
 let handleDisconnectCommand = function(channel, userstate) {
