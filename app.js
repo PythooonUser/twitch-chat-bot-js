@@ -3,18 +3,22 @@ const tmi = require("tmi.js");
 const config = require("./app.cfg.json");
 
 let CommandManager = (function() {
-    let commandDatabasePath = "./commands.json";
-    let commands;
+    let commandsBase;
+    let commandsStream;
 
-    let loadCommands = function() {
-        commands = require(commandDatabasePath);
+    let loadCommands = function(pathBase, pathStream) {
+        commandsBase = require(pathBase);
+        commandsStream = require(pathStream);
     };
 
-    let saveCommands = function() {
-        fs.writeFile(commandDatabasePath, JSON.stringify(commands, null, 4) + "\n", (err) => {});
+    let saveCommands = function(pathStream) {
+        fs.writeFile(pathStream, JSON.stringify(commandsStream, null, 4) + "\n", (err) => {});
     };
 
     let getCommand = function(name) {
+        commands = [];
+        commands = commands.concat(commandsBase);
+        commands = commands.concat(commandsStream);
         for (let i = 0; i < commands.length; i++) {
             if (commands[i].name === name) {
                 return commands[i];
@@ -23,11 +27,14 @@ let CommandManager = (function() {
     };
 
     let getCommands = function() {
+        commands = [];
+        commands = commands.concat(commandsBase);
+        commands = commands.concat(commandsStream);
         return commands;
     };
 
     let addCommand = function(name, message, author) {
-        commands.push({
+        commandsStream.push({
             name: "!" + name,
             message: message,
             author: author,
@@ -37,9 +44,9 @@ let CommandManager = (function() {
     };
 
     let removeCommand = function(name) {
-        for (let i = 0; i < commands.length; i++) {
-            if (commands[i].name === name) {
-                commands.splice(i, 1);
+        for (let i = 0; i < commandsStream.length; i++) {
+            if (commandsStream[i].name === name) {
+                commandsStream.splice(i, 1);
                 return;
             }
         }
@@ -54,7 +61,7 @@ let CommandManager = (function() {
         addCommand: addCommand
     };
 })();
-CommandManager.loadCommands();
+CommandManager.loadCommands(config.baseCommands, config.streamCommands);
 
 let client = new tmi.Client({
     options: {
@@ -131,7 +138,9 @@ let handleRemoveCommand = function(channel, userstate, message) {
 
 let handleCommandsCommand = function(channel) {
     let commandNames = [];
-    CommandManager.getCommands().forEach(command => {
+    CommandManager.getCommands().sort(
+        (a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)
+    ).forEach(command => {
         if (command.active && command.public) {
             commandNames.push(command.name);
         }
@@ -141,7 +150,7 @@ let handleCommandsCommand = function(channel) {
 
 let handleDisconnectCommand = function(channel, userstate) {
     if ("#" + userstate["username"] === channel) {
-        CommandManager.saveCommands();
+        CommandManager.saveCommands(config.streamCommands);
         client.disconnect();
     }
 };
