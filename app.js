@@ -54,7 +54,6 @@ let CommandManager = (function() {
         addCommand: addCommand
     };
 })();
-
 CommandManager.loadCommands();
 
 let client = new tmi.Client({
@@ -72,6 +71,81 @@ let client = new tmi.Client({
 });
 client.connect();
 
+let handleAddCommand = function(channel, userstate, message) {
+    let commandName = message.split(/\s/)[1];
+    if (commandName === undefined) {
+        client.say(channel, "Usage: !add name message");
+        return;
+    }
+
+    let messageIndex = "!add".length + commandName.length + 2;
+
+    if (commandName.startsWith("!")) {
+        commandName = commandName.substr(1);
+    }
+
+    commandName = commandName.toLowerCase();
+
+    let commandMessage = message.substr(messageIndex);
+    if (!commandMessage) {
+        client.say(channel, "Usage: !add name message");
+        return;
+    }
+
+    commandMessage = commandMessage.trim();
+
+    if (CommandManager.getCommand("!" + commandName)) {
+        client.say(channel, "@" + userstate["display-name"] + " This command already exists!");
+        return;
+    }
+
+    CommandManager.addCommand(commandName, commandMessage, userstate["username"]);
+    client.say(channel, "@" + userstate["display-name"] + " Your command has been added and can now be used!");
+};
+
+let handleRemoveCommand = function(channel, userstate, message) {
+    let commandNameToRemove = message.split(/\s/)[1];
+    if (commandNameToRemove === undefined) {
+        client.say(channel, "Usage: !remove name");
+        return;
+    }
+
+    if (commandNameToRemove.startsWith("!")) {
+        commandNameToRemove = commandNameToRemove.substr(1);
+    }
+
+    commandNameToRemove = commandNameToRemove.toLowerCase();
+    commandToRemove = CommandManager.getCommand("!" + commandNameToRemove);
+    if (!commandToRemove) {
+        client.say(channel, "@" + userstate["display-name"] + " This command does not exist! Try out !commands to see a list of all available commands!");
+        return;
+    }
+    if (commandToRemove.author !== userstate["username"]) {
+        client.say(channel, "@" + userstate["display-name"] + " The command can only be removed by @" + commandToRemove.author);
+        return;
+    }
+
+    CommandManager.removeCommand("!" + commandNameToRemove);
+    client.say(channel, "@" + userstate["display-name"] + " Your command has been removed!");
+};
+
+let handleCommandsCommand = function(channel) {
+    let commandNames = [];
+    CommandManager.getCommands().forEach(command => {
+        if (command.active && command.public) {
+            commandNames.push(command.name);
+        }
+    });
+    client.say(channel, "Available commands: " + commandNames.join(", "));
+};
+
+let handleDisconnectCommand = function(channel, userstate) {
+    if ("#" + userstate["username"] === channel) {
+        CommandManager.saveCommands();
+        client.disconnect();
+    }
+};
+
 client.on("chat", function(channel, userstate, message, self) {
     if (self) { return; };
     if (!message.startsWith("!")) { return; };
@@ -79,78 +153,19 @@ client.on("chat", function(channel, userstate, message, self) {
     let commandName = message.split(/\s/)[0].toLowerCase();
     switch(commandName) {
         case "!disconnect":
-            if ("#" + userstate["username"] === channel) {
-                CommandManager.saveCommands();
-                client.disconnect();
-            }
+            handleDisconnectCommand(channel, userstate);
             break;
 
         case "!add":
-            let newCommandName = message.split(/\s/)[1];
-            if (newCommandName === undefined) {
-                client.say(channel, "Usage: !add name message");
-                return;
-            }
-
-            let messageIndex = "!add".length + newCommandName.length + 2;
-
-            if (newCommandName.startsWith("!")) {
-                newCommandName = newCommandName.substr(1);
-            }
-
-            newCommandName = newCommandName.toLowerCase();
-
-            let newCommandMessage = message.substr(messageIndex);
-            if (!newCommandMessage) {
-                client.say(channel, "Usage: !add name message");
-                return;
-            }
-
-            newCommandMessage = newCommandMessage.trim();
-
-            if (CommandManager.getCommand("!" + newCommandName)) {
-                client.say(channel, "@" + userstate["display-name"] + " This command already exists!");
-                return;
-            }
-
-            CommandManager.addCommand(newCommandName, newCommandMessage, userstate["username"]);
-            client.say(channel, "@" + userstate["display-name"] + " Your command has been added and can now be used!");
+            handleAddCommand(channel, userstate, message);
             break;
 
         case "!remove":
-            let commandNameToRemove = message.split(/\s/)[1];
-            if (commandNameToRemove === undefined) {
-                client.say(channel, "Usage: !remove name");
-                return;
-            }
-
-            if (commandNameToRemove.startsWith("!")) {
-                commandNameToRemove = commandNameToRemove.substr(1);
-            }
-
-            commandNameToRemove = commandNameToRemove.toLowerCase();
-            commandToRemove = CommandManager.getCommand("!" + commandNameToRemove);
-            if (!commandToRemove) {
-                client.say(channel, "@" + userstate["display-name"] + " This command does not exist! Try out !commands to see a list of all available commands!");
-                return;
-            }
-            if (commandToRemove.author !== userstate["username"]) {
-                client.say(channel, "@" + userstate["display-name"] + " The command can only be removed by @" + commandToRemove.author);
-                return;
-            }
-
-            CommandManager.removeCommand("!" + commandNameToRemove);
-            client.say(channel, "@" + userstate["display-name"] + " Your command has been removed!");
+            handleRemoveCommand(channel, userstate, message);
             break;
 
         case "!commands":
-            let commandNames = [];
-            CommandManager.getCommands().forEach(command => {
-                if (command.active && command.public) {
-                    commandNames.push(command.name);
-                }
-            });
-            client.say(channel, "Available commands: " + commandNames.join(", "));
+            handleCommandsCommand(channel);
             break;
 
         default:
