@@ -31,11 +31,11 @@ let CommandManager = (function() {
         return [undefined, undefined];
     };
 
-    let getCommands = function() {
+    let getCommands = function(public=true) {
         commands = [];
         commands = commands.concat(commandsBase);
         commands = commands.concat(commandsStream);
-        return commands;
+        return commands.filter(command => command.active && command.public === public);
     };
 
     let addCommand = function(name, message, author) {
@@ -180,6 +180,12 @@ let handleHelloCommand = function(channel, userstate) {
     client.say(channel, greeting);
 };
 
+let handleInfoCommand = function(channel) {
+    let infos = CommandManager.getCommands(false);
+    let info = infos[Math.floor(Math.random() * infos.length)];
+    client.say(channel, info.message);
+};
+
 client.on("chat", function(channel, userstate, message, self) {
     if (self) { return; };
     if (!message.startsWith("!")) { return; };
@@ -206,10 +212,12 @@ client.on("chat", function(channel, userstate, message, self) {
             handleHelloCommand(channel, userstate);
             break;
 
+        case "!info":
+            handleInfoCommand(channel)
+            break;
+
         default:
-            let command;
-            let commandType;
-            [command, commandType] = CommandManager.getCommand(commandName);
+            let [command, ] = CommandManager.getCommand(commandName);
             if (!command) {
                 return;
             }

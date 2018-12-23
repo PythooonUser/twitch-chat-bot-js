@@ -5,5 +5,12 @@
         "author": "author",
         "public": true,
         "active": true
+    },
+    {
+        "name": "info",
+        "message": "Info",
+        "author": "author",
+        "public": false,
+        "active": true
     }
 ]
