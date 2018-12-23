@@ -1,0 +1,9 @@
+[
+    {
+        "name": "!name",
+        "message": "Message",
+        "author": "author",
+        "public": true,
+        "active": true
+    }
+]
