@@ -1,24 +1,62 @@
 const fs = require("fs");
 const tmi = require("tmi.js");
 const config = require("./app.cfg.json");
-const commands = require("./commands.json");
 
-let getCommandByName = function(name) {
-    for (let i = 0; i < commands.length; i++) {
-        if (commands[i].name === name) {
-            return commands[i];
-        }
-    }
-};
+let CommandManager = (function() {
+    let commandDatabasePath = "./commands.json";
+    let commands;
 
-let removeCommandWithName = function(name) {
-    for (let i = 0; i < commands.length; i++) {
-        if (commands[i].name === name) {
-            commands.splice(i, 1);
-            return;
+    let loadCommands = function() {
+        commands = require(commandDatabasePath);
+        console.log(commands);
+    };
+
+    let saveCommands = function() {
+        fs.writeFile(commandDatabasePath, JSON.stringify(commands), (err) => {});
+    };
+
+    let getCommand = function(name) {
+        for (let i = 0; i < commands.length; i++) {
+            if (commands[i].name === name) {
+                return commands[i];
+            }
         }
-    }
-};
+    };
+
+    let getCommands = function() {
+        return commands;
+    };
+
+    let addCommand = function(name, message, author) {
+        commands.push({
+            name: "!" + name,
+            message: message,
+            author: author,
+            public: true,
+            active: true
+        });
+    };
+
+    let removeCommand = function(name) {
+        for (let i = 0; i < commands.length; i++) {
+            if (commands[i].name === name) {
+                commands.splice(i, 1);
+                return;
+            }
+        }
+    };
+
+    return {
+        loadCommands: loadCommands,
+        saveCommands: saveCommands,
+        getCommand: getCommand,
+        getCommands: getCommands,
+        removeCommand: removeCommand,
+        addCommand: addCommand
+    };
+})();
+
+CommandManager.loadCommands();
 
 let client = new tmi.Client({
     options: {
@@ -43,7 +81,7 @@ client.on("chat", function(channel, userstate, message, self) {
     switch(commandName) {
         case "!disconnect":
             if ("#" + userstate["username"] === channel) {
-                fs.writeFile("./commands.json", JSON.stringify(commands), (err) => {});
+                CommandManager.saveCommands();
                 client.disconnect();
             }
             break;
@@ -69,18 +107,12 @@ client.on("chat", function(channel, userstate, message, self) {
 
             newCommandMessage = newCommandMessage.trim();
 
-            if (getCommandByName("!" + newCommandName)) {
+            if (CommandManager.getCommand("!" + newCommandName)) {
                 client.say(channel, "@" + userstate["display-name"] + " This command already exists!");
                 return;
             }
 
-            commands.push({
-                name: "!" + newCommandName,
-                message: newCommandMessage,
-                author: userstate["username"],
-                public: true,
-                active: true
-            });
+            CommandManager.addCommand("!" + newCommandName, newCommandMessage, userstate["username"]);
             client.say(channel, "@" + userstate["display-name"] + " Your command has been added and can now be used!");
             break;
 
@@ -96,7 +128,7 @@ client.on("chat", function(channel, userstate, message, self) {
             }
 
             commandNameToRemove = commandNameToRemove.toLowerCase();
-            commandToRemove = getCommandByName("!" + commandNameToRemove);
+            commandToRemove = CommandManager.getCommand("!" + commandNameToRemove);
             if (!commandToRemove) {
                 client.say(channel, "@" + userstate["display-name"] + " This command does not exist! Try out !commands to see a list of all available commands!");
                 return;
@@ -106,13 +138,13 @@ client.on("chat", function(channel, userstate, message, self) {
                 return;
             }
 
-            removeCommandWithName("!" + commandNameToRemove);
+            CommandManager.removeCommand("!" + commandNameToRemove);
             client.say(channel, "@" + userstate["display-name"] + " Your command has been removed!");
             break;
 
         case "!commands":
             let commandNames = [];
-            commands.forEach(command => {
+            CommandManager.getCommands().forEach(command => {
                 if (command.active && command.public) {
                     commandNames.push(command.name);
                 }
@@ -121,7 +153,7 @@ client.on("chat", function(channel, userstate, message, self) {
             break;
 
         default:
-            let command = getCommandByName(commandName);
+            let command = CommandManager.getCommand(commandName);
             if (!command) {
                 return;
             }
