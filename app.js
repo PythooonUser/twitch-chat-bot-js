@@ -1,72 +1,16 @@
 const fs = require("fs");
+const path = require("path");
 const tmi = require("tmi.js");
+
 const config = require("./app.cfg.json");
+let CommandManager = require("./twitch-chat-bot-js/commandmanager");
 
-let CommandManager = (function() {
-    let commandsBase;
-    let commandsStream;
+let currentFilePath = path.dirname(fs.realpathSync(__filename));
 
-    let loadCommands = function(pathBase, pathStream) {
-        commandsBase = require(pathBase);
-        commandsStream = require(pathStream);
-    };
-
-    let saveCommands = function(pathStream) {
-        fs.writeFile(pathStream, JSON.stringify(commandsStream, null, 4) + "\n", (err) => {});
-    };
-
-    let getCommand = function(name) {
-        for (let i = 0; i < commandsBase.length; i++) {
-            if (commandsBase[i].name === name) {
-                return [commandsBase[i], "base"];
-            }
-        }
-
-        for (let i = 0; i < commandsStream.length; i++) {
-            if (commandsStream[i].name === name) {
-                return [commandsStream[i], "stream"];
-            }
-        }
-
-        return [undefined, undefined];
-    };
-
-    let getCommands = function(public=true) {
-        commands = [];
-        commands = commands.concat(commandsBase);
-        commands = commands.concat(commandsStream);
-        return commands.filter(command => command.active && command.public === public);
-    };
-
-    let addCommand = function(name, message, author) {
-        commandsStream.push({
-            name: "!" + name,
-            message: message,
-            author: author,
-            public: true,
-            active: true
-        });
-    };
-
-    let removeCommand = function(name) {
-        for (let i = 0; i < commandsStream.length; i++) {
-            if (commandsStream[i].name === name) {
-                commandsStream.splice(i, 1);
-                return;
-            }
-        }
-    };
-
-    return {
-        loadCommands: loadCommands,
-        saveCommands: saveCommands,
-        getCommand: getCommand,
-        getCommands: getCommands,
-        removeCommand: removeCommand,
-        addCommand: addCommand
-    };
-})();
-CommandManager.loadCommands(config.baseCommands, config.streamCommands);
+CommandManager.init(
+    path.join(currentFilePath, config.baseCommands),
+    path.join(currentFilePath, config.streamCommands)
+);
 
 let client = new tmi.Client({
     options: {
@@ -167,7 +111,7 @@ let handleCommandsCommand = function(channel) {
 
 let handleDisconnectCommand = function(channel, userstate) {
     if ("#" + userstate["username"] === channel) {
-        CommandManager.saveCommands(config.streamCommands);
+        CommandManager.saveCommands();
         client.disconnect();
     }
 };
