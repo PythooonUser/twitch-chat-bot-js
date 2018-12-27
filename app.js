@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const tmi = require("tmi.js");
+const logger = require("tmi.js/lib/logger");
 
 const config = require("./app.cfg.json");
 let CommandManager = require("./twitch-chat-bot-js/commandmanager");
@@ -170,5 +171,17 @@ client.on("chat", function(channel, userstate, message, self) {
                 client.say(channel, command.message + " (" + command.author + ")");
             }
             break;
+    }
+});
+
+client.on("join", function (channel, username, self) {
+    if (!self) {
+        logger.info(username + " joined " + channel);
+    }
+});
+
+client.on("part", function (channel, username, self) {
+    if (!self) {
+        logger.info(username + " left " + channel);
     }
 });
