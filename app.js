@@ -4,7 +4,7 @@ const tmi = require("tmi.js");
 const logger = require("tmi.js/lib/logger");
 
 const config = require("./app.cfg.json");
-let CommandManager = require("./twitch-chat-bot-js/commandmanager");
+let CommandManager = require("./twitch-chat-bot-js/command-manager");
 
 let currentFilePath = path.dirname(fs.realpathSync(__filename));
 
