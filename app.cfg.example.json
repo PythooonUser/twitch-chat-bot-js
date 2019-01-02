@@ -1,0 +1,11 @@
+{
+    "username": "username",
+    "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
+    "channel": "#channel",
+    "verbose": true,
+    "baseCommands": "./commands-base.json",
+    "streamCommands": "./commands-stream.json",
+    "greetings": [
+        "Hello @{name}"
+    ]
+}
