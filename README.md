@@ -4,6 +4,7 @@
 ## Features
 - Easy configuration using JSON files
 - Users in chat can create custom commands
+- Users in chat can set custom hashtag
 
 ## Installation
 1. Create configuration file `app.cfg.json` based on `app.cfg.example.json` contents and **adjust for your needs**.
