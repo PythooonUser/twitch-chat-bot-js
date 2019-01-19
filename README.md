@@ -13,3 +13,10 @@
 1. Install dependencies using `$ npm install`
 1. Run Chat Bot using `$ node app.js`
 1. Stop Chat Bot by writing `!disconnect` in Twitch Chat
+
+## Build-in Commands
+- `!add`
+- `!remove`
+- `!commands`
+- `!hashtag`
+- `!disconnect`
