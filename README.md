@@ -1,6 +1,8 @@
 # twitch-chat-bot-js
 > A simple Chat Bot for a single Twitch Channel.
 
+![Chat Bot](./.media/TwitterPost.png)
+
 ## Features
 - Easy configuration using JSON files
 - Users in chat can create custom commands
