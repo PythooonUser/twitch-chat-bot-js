@@ -1,16 +1,9 @@
 [
     {
-        "name": "!name",
-        "message": "Message",
-        "author": "author",
-        "public": true,
-        "active": true
-    },
-    {
-        "name": "info",
-        "message": "Info",
-        "author": "author",
-        "public": false,
+        "name": "!twitter",
+        "message": "Find me on Twitter @username",
+        "author": "username",
+        "authorDisplay": "Username",
         "active": true
     }
 ]
