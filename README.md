@@ -4,10 +4,7 @@
 ## Features
 - Easy configuration using JSON files
 - Users in chat can create custom commands
-![Screenshot 2](./.media/Screenshot02.png)
 - Users in chat can set custom hashtag
-![Screenshot](./.media/Screenshot.png)
-
 
 ## Installation
 1. Create configuration file `app.cfg.json` based on `app.cfg.example.json` contents and **adjust for your needs**.
