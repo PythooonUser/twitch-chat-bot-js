@@ -6,7 +6,6 @@ const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 
 let commands = JSON.parse(fs.readFileSync(config.commands));
 let hashtag = JSON.parse(fs.readFileSync(config.hashtag));
-let messages = [];
 
 let client = new tmi.Client({
     options: {
@@ -25,25 +24,6 @@ let client = new tmi.Client({
 process.on("SIGINT", () => {
     client.disconnect()
         .then((data) => {
-            let fileName = `messages-${(new Date()).toISOString().substring(0, 10)}.json`;
-            let fileContent;
-
-            try {
-                fileContent = JSON.parse(fs.readFileSync(fileName));
-
-                if (messages.length > 0) {
-                    fileContent.messages = fileContent.messages.concat(messages);
-                }
-            }
-            catch (error) {
-                fileContent = { messages: messages };
-            }
-
-            fs.writeFileSync(
-                fileName,
-                JSON.stringify(fileContent, null, 4) + "\n"
-            );
-
             process.exit();
         });
 });
@@ -61,13 +41,6 @@ client.on("part", function (channel, username, self) {
 });
 
 client.on("chat", function (channel, userstate, commandMessage, self) {
-    messages.push({
-        message: commandMessage,
-        username: userstate.username,
-        channel: channel,
-        timestamp: new Date()
-    });
-
     if (self) { return; };
     if (!config.verbose) { return; };
     if (!commandMessage.startsWith("!")) { return; };
@@ -75,8 +48,8 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
     let commandName = commandMessage.split(/\s/)[0].toLowerCase();
     commandMessage = commandMessage.slice(commandName.length).trim();
 
-    switch(commandName) {
-        case("!commands"):
+    switch (commandName) {
+        case ("!commands"):
             (() => {
                 let commandNames = "!commands !hashtag !add !remove"
                     .split(/\s/)
@@ -95,13 +68,13 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 );
             })();
             break;
-        case("!hashtag"):
+        case ("!hashtag"):
             (() => {
                 if (!commandMessage) { client.say(channel, `Usage: !hashtag message`); return; }
 
                 hashtag.hashtag = (commandMessage.startsWith("#") ? "" : "#") + commandMessage.split(/\s/).map(part => {
-                        return part[0].toUpperCase() + part.slice(1);
-                    }).join("");
+                    return part[0].toUpperCase() + part.slice(1);
+                }).join("");
 
                 fs.writeFile(
                     config.hashtag,
@@ -113,7 +86,7 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 );
             })();
             break;
-        case("!add"):
+        case ("!add"):
             (() => {
                 if (!commandMessage) { client.say(channel, `Usage: !add command message`); return; }
 
@@ -160,7 +133,7 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 );
             })();
             break;
-        case("!remove"):
+        case ("!remove"):
             (() => {
                 if (!commandMessage) { client.say(channel, `Usage: !remove command`); return; }
 

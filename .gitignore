@@ -8,4 +8,3 @@ node_modules/
 app.cfg.json
 commands.json
 hashtag.json
-messages-*.json
