@@ -1,9 +1,9 @@
 [
     {
         "name": "!twitter",
-        "message": "Find me on Twitter @username",
+        "message": "Find me on Twitter @username FancyEmote",
         "author": "username",
-        "authorDisplay": "Username",
+        "public": true,
         "active": true
     }
 ]

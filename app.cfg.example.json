@@ -3,7 +3,6 @@
     "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
     "channel": "#channel",
     "verbose": true,
-    "commandsBasePath": "./commands-base.json",
-    "commandsStreamPath": "./commands-stream.json",
-    "hashtagStreamPath": "./hashtag-stream.json"
+    "commands": "./commands.json",
+    "hashtag": "./hashtag.json"
 }
