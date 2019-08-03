@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/PythooonUser/twitch-chat-bot-js#readme",
   "dependencies": {
-    "tmi.js": "^1.2.1"
+    "tmi.js": "^1.4.5"
   }
 }
