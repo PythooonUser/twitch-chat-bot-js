@@ -3,6 +3,6 @@
     "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
     "channel": "#channel",
     "verbose": true,
-    "commands": "./commands.json",
-    "hashtag": "./hashtag.json"
+    "commands": "./commands.example.json",
+    "hashtag": "./hashtag.example.txt"
 }

@@ -5,7 +5,7 @@ const logger = require("tmi.js/lib/logger");
 const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 
 let commands = JSON.parse(fs.readFileSync(config.commands));
-let hashtag = JSON.parse(fs.readFileSync(config.hashtag));
+let hashtag = fs.readFileSync(config.hashtag, "utf8");
 
 let client = new tmi.Client({
     options: {
@@ -72,13 +72,13 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
             (() => {
                 if (!commandMessage) { client.say(channel, `Usage: !hashtag message`); return; }
 
-                hashtag.hashtag = (commandMessage.startsWith("#") ? "" : "#") + commandMessage.split(/\s/).map(part => {
+                hashtag = (commandMessage.startsWith("#") ? "" : "#") + commandMessage.split(/\s/).map(part => {
                     return part[0].toUpperCase() + part.slice(1);
                 }).join("");
 
                 fs.writeFile(
                     config.hashtag,
-                    JSON.stringify(hashtag, null, 4) + "\n",
+                    hashtag,
                     (error) => {
                         if (error) { client.say(channel, `@${userstate.username} An error occured while setting your hashtag. Please try again!`); return; }
                         client.say(channel, `@${userstate.username} Your hashtag has been set!`);
