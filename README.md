@@ -9,17 +9,15 @@
 - Users in chat can set custom hashtag
 
 ## Installation
-1. Create configuration file `app.cfg.json` based on `app.cfg.example.json` contents and **adjust for your needs**.
-1. Create command database file `commands-base.json` based on `commands.example.json` contents for your default commands.
-1. Create command database file `commands-[stream].json` based on `commands.example.json` contents for your individual `[stream]` commands. User commands will be saved here. E.g. `commands-dark-souls-3.json`.
-1. Create hashtag file `hashtag-[stream].json` for your individual `[stream]` hashtag. User hashtags will be saved here. E.g. `hashtag-dark-souls-3.json`.
+1. Create configuration file `app.cfg.json` based on `app.cfg.example.json` contents and **adjust based on your needs**
+1. Create command database file `commands.json` based on `commands.example.json` contents for your default commands. In addition all user commands will be saved here
+1. Create hashtag file `hashtag.json` based on `hashtag.example.json` contents
 1. Install dependencies using `$ npm install`
 1. Run Chat Bot using `$ node app.js`
-1. Stop Chat Bot by writing `!disconnect` in Twitch Chat
+1. Stop Chat Bot by using keyboard interrupt `Ctrl+C`
 
 ## Build-in Commands
 - `!add`
 - `!remove`
 - `!commands`
 - `!hashtag`
-- `!disconnect`

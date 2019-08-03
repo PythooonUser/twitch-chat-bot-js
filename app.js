@@ -2,7 +2,7 @@ const fs = require("fs");
 const tmi = require("tmi.js");
 const logger = require("tmi.js/lib/logger");
 
-const config = JSON.parse(fs.readFileSync("app2.cfg.json"));
+const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 
 let commands = JSON.parse(fs.readFileSync(config.commands));
 let hashtag = JSON.parse(fs.readFileSync(config.hashtag));
@@ -63,29 +63,6 @@ client.on("part", function (channel, username, self) {
 });
 
 client.on("chat", function (channel, userstate, commandMessage, self) {
-    // Always produces the following logger output:
-    // [10:48] info: [#pythooonuser] <pythooonuser>: !hello
-
-    // userstate
-    // { 'badge-info': null,
-    // badges: { broadcaster: '1' },
-    // color: '#9ACD32',
-    // 'display-name': 'PythooonUser',
-    // emotes: null,
-    // flags: null,
-    // id: 'c54ed14b-90d4-4cfc-a6aa-2554d6bda179',
-    // mod: false,
-    // 'room-id': '145362731',
-    // subscriber: false,
-    // 'tmi-sent-ts': '1564822095120',
-    // turbo: false,
-    // 'user-id': '145362731',
-    // 'user-type': null,
-    // 'emotes-raw': null,
-    // 'badges-raw': 'broadcaster/1',
-    // username: 'pythooonuser',
-    // 'message-type': 'chat' }
-
     messages.push({
         message: commandMessage,
         username: userstate.username,
