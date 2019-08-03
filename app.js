@@ -31,8 +31,6 @@ process.on("SIGINT", () => {
             try {
                 fileContent = JSON.parse(fs.readFileSync(fileName));
 
-                console.log(messages);
-
                 if (messages.length > 0) {
                     fileContent.messages = fileContent.messages.concat(messages);
                 }
