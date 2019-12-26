@@ -7,6 +7,9 @@ const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 let commands = JSON.parse(fs.readFileSync(config.commands));
 let hashtag = fs.readFileSync(config.hashtag, "utf8");
 
+let viewers = [];
+const emotes = { HeyGuys: "HeyGuys" };
+
 let client = new tmi.Client({
     options: {
         debug: true
@@ -43,6 +46,12 @@ client.on("part", function (channel, username, self) {
 client.on("chat", function (channel, userstate, commandMessage, self) {
     if (self) { return; };
     if (!config.verbose) { return; };
+
+    if (!viewers.includes(userstate.username)) {
+        viewers.push(userstate.username);
+        client.say(config.channel, `Welcome to the stream, ${userstate["display-name"]} ${emotes.HeyGuys}`);
+    }
+
     if (!commandMessage.startsWith("!")) { return; };
 
     let commandName = commandMessage.split(/\s/)[0].toLowerCase();
