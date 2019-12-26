@@ -2,7 +2,5 @@
     "username": "username",
     "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
     "channel": "#channel",
-    "verbose": true,
-    "commands": "./commands.example.json",
-    "hashtag": "./hashtag.example.txt"
+    "verbose": true
 }

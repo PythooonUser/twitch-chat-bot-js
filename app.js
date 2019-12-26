@@ -3,53 +3,42 @@ const tmi = require("tmi.js");
 const logger = require("tmi.js/lib/logger");
 
 const config = JSON.parse(fs.readFileSync("app.cfg.json"));
-
-let commands = JSON.parse(fs.readFileSync(config.commands));
-let hashtag = fs.readFileSync(config.hashtag, "utf8");
+let commands = JSON.parse(fs.readFileSync("commands.json"));
 
 let viewers = [];
 const emotes = { HeyGuys: "HeyGuys" };
 
 let client = new tmi.Client({
-    options: {
-        debug: true
-    },
-    connection: {
-        reconnect: true
-    },
     identity: {
         username: config.username,
         password: config.password
     },
-    channels: [config.channel]
+    channels: [config.channel],
+    options: {
+        debug: true
+    },
+    connection: {
+        reconnect: true,
+        secure: true
+    }
 });
+
+client.connect();
 
 process.on("SIGINT", () => {
     client.disconnect()
-        .then((data) => {
+        .then(() => {
             process.exit();
         });
 });
 
-client.on("join", (channel, username, self) => {
-    if (!self) {
-        logger.info(`[${channel}] ${username} joined`);
-    }
-});
-
-client.on("part", function (channel, username, self) {
-    if (!self) {
-        logger.info(`[${channel}] ${username} left`);
-    }
-});
-
-client.on("chat", function (channel, userstate, commandMessage, self) {
+client.on("chat", (channel, userstate, commandMessage, self) => {
     if (self) { return; };
     if (!config.verbose) { return; };
 
     if (!viewers.includes(userstate.username)) {
         viewers.push(userstate.username);
-        client.say(config.channel, `Welcome to the stream, ${userstate["display-name"]} ${emotes.HeyGuys}`);
+        client.say(channel, `Welcome to the stream, ${userstate["display-name"]} ${emotes.HeyGuys}`);
     }
 
     if (!commandMessage.startsWith("!")) { return; };
@@ -59,8 +48,9 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
 
     switch (commandName) {
         case ("!commands"):
+        case ("!c"):
             (() => {
-                let commandNames = "!commands !hashtag !add !remove"
+                let commandNames = "!c|commands !a|add !r|remove"
                     .split(/\s/)
                     .concat(
                         commands.map(command => {
@@ -77,38 +67,21 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 );
             })();
             break;
-        case ("!hashtag"):
-            (() => {
-                if (!commandMessage) { client.say(channel, `Usage: !hashtag message`); return; }
-
-                hashtag = (commandMessage.startsWith("#") ? "" : "#") + commandMessage.split(/\s/).map(part => {
-                    return part[0].toUpperCase() + part.slice(1);
-                }).join("");
-
-                fs.writeFile(
-                    config.hashtag,
-                    hashtag,
-                    (error) => {
-                        if (error) { client.say(channel, `@${userstate.username} An error occured while setting your hashtag. Please try again!`); return; }
-                        client.say(channel, `@${userstate.username} Your hashtag has been set!`);
-                    }
-                );
-            })();
-            break;
         case ("!add"):
+        case ("!a"):
             (() => {
-                if (!commandMessage) { client.say(channel, `Usage: !add command message`); return; }
+                if (!commandMessage) { client.say(channel, `Usage: !a|add command message`); return; }
 
                 commandName = commandMessage.split(/\s/)[0];
-                if (!commandName) { client.say(channel, `Usage: !add command message`); return; }
+                if (!commandName) { client.say(channel, `Usage: !a|add command message`); return; }
 
                 commandMessage = commandMessage.substr(commandName.length);
-                if (!commandMessage) { client.say(channel, `Usage: !add command message`); return; }
+                if (!commandMessage) { client.say(channel, `Usage: !a|add command message`); return; }
 
                 commandName = (commandName.startsWith("!") ? "" : "!") + commandName;
                 commandName = commandName.toLowerCase();
 
-                let commandNames = "!commands !hashtag !add !remove"
+                let commandNames = "!commands !c !add !a !remove !r"
                     .split(/\s/)
                     .concat(
                         commands.map(command => {
@@ -134,7 +107,7 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 client.say(channel, `@${userstate.username} The command ${commandName} has been added!`);
 
                 fs.writeFile(
-                    config.commands,
+                    "commands.json",
                     JSON.stringify(commands, null, 4) + "\n",
                     (error) => {
                         if (error) { logger.warn(`[${channel}] An error occured while adding the command ${commandName}!`); }
@@ -143,12 +116,13 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
             })();
             break;
         case ("!remove"):
+        case ("!r"):
             (() => {
-                if (!commandMessage) { client.say(channel, `Usage: !remove command`); return; }
+                if (!commandMessage) { client.say(channel, `Usage: !r|remove command`); return; }
 
                 commandMessage = (commandMessage.startsWith("!") ? "" : "!") + commandMessage.toLowerCase();
 
-                if ("!commands !hashtag !add !remove".split(/\s/).includes(commandMessage)) {
+                if ("!commands !c !add !a !remove !r".split(/\s/).includes(commandMessage)) {
                     client.say(channel, `@${userstate.username} The command ${commandMessage} cannot be removed!`);
                     return;
                 }
@@ -172,7 +146,7 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                 client.say(channel, `@${userstate.username} The command ${commandMessage} has been removed!`);
 
                 fs.writeFile(
-                    config.commands,
+                    "commands.json",
                     JSON.stringify(commands, null, 4) + "\n",
                     (error) => {
                         if (error) { logger.warn(`[${channel}] An error occured while removing the command ${commandMessage}!`); }
@@ -187,10 +161,7 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
                         return element.name === commandName && element.active && (element.public || `#${userstate.username}` === channel);
                     });
 
-                if (command.length <= 0) {
-                    // client.say(channel, `@${userstate.username} The command ${commandName} does not exist!`);
-                    return;
-                }
+                if (command.length <= 0) { return; }
 
                 command = command[0];
 
@@ -204,5 +175,3 @@ client.on("chat", function (channel, userstate, commandMessage, self) {
             break;
     }
 });
-
-client.connect();
