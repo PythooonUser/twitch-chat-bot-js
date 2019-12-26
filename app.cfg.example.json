@@ -2,5 +2,6 @@
     "username": "username",
     "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
     "channel": "#channel",
-    "verbose": true
+    "verbose": true,
+    "commands": "commands.example.json"
 }

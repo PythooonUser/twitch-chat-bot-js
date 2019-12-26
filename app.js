@@ -3,7 +3,7 @@ const tmi = require("tmi.js");
 const logger = require("tmi.js/lib/logger");
 
 const config = JSON.parse(fs.readFileSync("app.cfg.json"));
-let commands = JSON.parse(fs.readFileSync("commands.json"));
+let commands = JSON.parse(fs.readFileSync(config.commands));
 
 let viewers = [];
 const emotes = { HeyGuys: "HeyGuys" };
@@ -70,13 +70,13 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
         case ("!add"):
         case ("!a"):
             (() => {
-                if (!commandMessage) { client.say(channel, `Usage: !a|add command message`); return; }
+                if (!commandMessage) { client.say(channel, `@${userstate.username} Usage: !a|add command message`); return; }
 
                 commandName = commandMessage.split(/\s/)[0];
-                if (!commandName) { client.say(channel, `Usage: !a|add command message`); return; }
+                if (!commandName) { client.say(channel, `@${userstate.username} Usage: !a|add command message`); return; }
 
                 commandMessage = commandMessage.substr(commandName.length);
-                if (!commandMessage) { client.say(channel, `Usage: !a|add command message`); return; }
+                if (!commandMessage) { client.say(channel, `@${userstate.username} Usage: !a|add command message`); return; }
 
                 commandName = (commandName.startsWith("!") ? "" : "!") + commandName;
                 commandName = commandName.toLowerCase();
@@ -107,7 +107,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                 client.say(channel, `@${userstate.username} The command ${commandName} has been added!`);
 
                 fs.writeFile(
-                    "commands.json",
+                    config.commands,
                     JSON.stringify(commands, null, 4) + "\n",
                     (error) => {
                         if (error) { logger.warn(`[${channel}] An error occured while adding the command ${commandName}!`); }
@@ -118,7 +118,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
         case ("!remove"):
         case ("!r"):
             (() => {
-                if (!commandMessage) { client.say(channel, `Usage: !r|remove command`); return; }
+                if (!commandMessage) { client.say(channel, `@${userstate.username} Usage: !r|remove command`); return; }
 
                 commandMessage = (commandMessage.startsWith("!") ? "" : "!") + commandMessage.toLowerCase();
 
@@ -146,7 +146,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
                 client.say(channel, `@${userstate.username} The command ${commandMessage} has been removed!`);
 
                 fs.writeFile(
-                    "commands.json",
+                    config.commands,
                     JSON.stringify(commands, null, 4) + "\n",
                     (error) => {
                         if (error) { logger.warn(`[${channel}] An error occured while removing the command ${commandMessage}!`); }

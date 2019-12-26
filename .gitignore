@@ -1,10 +1,9 @@
 ## VS Code generated files and folders
-.vscode/
+/.vscode/
 
 ## NPM generated files and folders
-node_modules/
+/node_modules/
 
 ## App generated files and folders
 app.cfg.json
 commands.json
-hashtag.txt
