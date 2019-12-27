@@ -6,7 +6,7 @@
 ## Features
 - Easy configuration using JSON files
 - Users in chat can create custom commands
-    - Using `!a|add` or `!r|remove`
+    - Using `!add` or `!remove`
 - Viewers writing their first message in current stream session are greeted
     - Welcome to the stream, `username` HeyGuys
 - Verbose option to toggle whether chat bot can send messages to chat
@@ -27,6 +27,6 @@ The config file contains the following properties:
 - commands: Path to command database file
 
 ## Build-in Commands
-- `!add`, `!a`
-- `!remove`, `!r`
-- `!commands`, `!c`
+- `!add`
+- `!remove`
+- `!commands`
