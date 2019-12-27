@@ -3,7 +3,12 @@
         "name": "!twitter",
         "message": "Find me on Twitter @username FancyEmote",
         "author": "username",
-        "public": true,
         "active": true
+    },
+    {
+        "name": "!unused",
+        "message": "This command is unused at the moment BibleThumb",
+        "author": "username",
+        "active": false
     }
 ]
