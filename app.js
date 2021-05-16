@@ -38,7 +38,7 @@ process.on("SIGINT", () => {
           }
         }),
         null,
-        4
+        2
       ) + "\n",
       () => {
         logger.warn(`Could not save commands to ${config.commands}!`);
