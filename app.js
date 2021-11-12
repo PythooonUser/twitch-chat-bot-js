@@ -42,6 +42,17 @@ process.on("SIGINT", () => {
       ) + "\n",
       () => {
         logger.warn(`Could not save commands to ${config.commands}!`);
+        logger.info(
+          commands.sort((a, b) => {
+            if (a.name < b.name) {
+              return -1;
+            } else if (a.name > b.name) {
+              return 1;
+            } else {
+              return 0;
+            }
+          })
+        );
       }
     );
 
