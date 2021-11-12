@@ -196,7 +196,6 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
         });
 
         if (command.length <= 0) {
-          // client.say(channel, `@${userstate.username} The command ${commandMessage} does not exist!`);
           return;
         }
 
