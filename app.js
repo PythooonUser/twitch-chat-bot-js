@@ -57,7 +57,10 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     return;
   }
 
-  if (!viewers.includes(userstate.username)) {
+  if (
+    !viewers.includes(userstate.username) &&
+    "#" + userstate.username != config.channel
+  ) {
     viewers.push(userstate.username);
     client.say(
       channel,
