@@ -8,3 +8,6 @@ node_modules/
 app.cfg.json
 commands*.json
 !commands.example.json
+
+## APP OUTPUT
+app.exe
