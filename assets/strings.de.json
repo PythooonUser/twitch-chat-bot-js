@@ -1,0 +1,22 @@
+{
+  "greetings": ["Hallo, $VIEWER_NAME HeyGuys", "Willkommen zum Stream, $VIEWER_NAME HeyGuys"],
+  "defaultCommands": {
+    "commands": {
+      "name": "kommandos",
+      "message": "Die folgenden Kommandos sind verfügbar"
+    },
+    "add": {
+      "name": "hinzufügen",
+      "usage": "Verwendung: !hinzufügen kommando nachricht",
+      "alreadyExists": "Das Kommando $COMMAND_NAME existiert bereits!",
+      "success": "Das Kommando $COMMAND_NAME wurde hinzugefügt!"
+    },
+    "remove": {
+      "name": "entfernen",
+      "usage": "Verwendung: !entfernen kommando",
+      "isBuiltIn": "Das Kommando $COMMAND_NAME kann nicht entfernt werden!",
+      "isNotAuthor": "Das Kommando $COMMAND_NAME kann nicht entfernt werden. @$COMMAND_AUTHOR ist der Autor!",
+      "success": "Das Kommando $COMMAND_NAME wurde entfernt!"
+    }
+  }
+}

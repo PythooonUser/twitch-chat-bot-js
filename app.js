@@ -4,6 +4,7 @@ const logger = require("tmi.js/lib/logger");
 
 const config = JSON.parse(fs.readFileSync("app.cfg.json"));
 let commands = JSON.parse(fs.readFileSync(config.commands));
+const strings = JSON.parse(fs.readFileSync(`./assets/strings.${config.language}.json`));
 let viewers = [];
 
 let client = new tmi.Client({
@@ -68,13 +69,16 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     return;
   }
 
-  if (
-    config.greetNewViewers &&
-    !viewers.includes(userstate.username) &&
-    "#" + userstate.username !== config.channel
-  ) {
-    viewers.push(userstate.username);
-    client.say(channel, `Welcome to the stream, ${userstate["display-name"]} HeyGuys`);
+  const username = config.debug?.randomizeViewerName
+    ? "User" + Math.random().toString().substr(2, 6)
+    : userstate.username;
+
+  if (config.greetNewViewers && !viewers.includes(username) && "#" + username !== config.channel) {
+    viewers.push(username);
+
+    const index = Math.floor(Math.random() * strings.greetings.length);
+    const message = strings.greetings[index].replace("$VIEWER_NAME", userstate["display-name"]);
+    client.say(channel, message);
   }
 
   if (!commandMessage.startsWith("!")) {
@@ -85,35 +89,33 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
   commandMessage = commandMessage.slice(commandName.length).trim();
 
   switch (commandName) {
-    case "!commands":
+    case `!${strings.defaultCommands.commands.name}`:
       (() => {
-        let names = "!commands !add !remove"
-          .split(/\s/)
-          .concat(
-            commands
-              .map((c) => {
-                if (c.active) {
-                  return c.name;
-                } else {
-                  return null;
-                }
-              })
-              .filter((name) => {
-                return name !== null;
-              })
-          )
-          .sort()
-          .join(", ");
+        let names =
+          `!${strings.defaultCommands.commands.name} !${strings.defaultCommands.add.name} !${strings.defaultCommands.remove.name}`
+            .split(/\s/)
+            .concat(
+              commands
+                .map((c) => {
+                  if (c.active) {
+                    return c.name;
+                  } else {
+                    return null;
+                  }
+                })
+                .filter((name) => {
+                  return name !== null;
+                })
+            )
+            .sort()
+            .join(", ");
 
-        client.say(
-          channel,
-          `@${userstate.username} The following commands are available: ${names}`
-        );
+        client.say(channel, `@${username} ${strings.defaultCommands.commands.message}: ${names}`);
       })();
       break;
-    case "!add":
+    case `!${strings.defaultCommands.add.name}`:
       (() => {
-        const usage = `@${userstate.username} Usage: !add command message`;
+        const usage = `@${username} ${strings.defaultCommands.add.usage}`;
 
         if (!commandMessage) {
           client.say(channel, usage);
@@ -135,48 +137,70 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
         commandName = (commandName.startsWith("!") ? "" : "!") + commandName;
         commandName = commandName.toLowerCase();
 
-        let commandNames = "!commands !add !remove".split(/\s/).concat(
-          commands
-            .map((command) => {
-              if (!command.active) {
-                return null;
-              }
-              return command.name;
-            })
-            .filter((name) => {
-              return name !== null;
-            })
-        );
+        let commandNames =
+          `!${strings.defaultCommands.commands.name} !${strings.defaultCommands.add.name} !${strings.defaultCommands.remove.name}`
+            .split(/\s/)
+            .concat(
+              commands
+                .map((command) => {
+                  if (!command.active) {
+                    return null;
+                  }
+                  return command.name;
+                })
+                .filter((name) => {
+                  return name !== null;
+                })
+            );
 
         if (commandNames.includes(commandName)) {
-          client.say(channel, `@${userstate.username} The command ${commandName} already exists!`);
+          client.say(
+            channel,
+            `@${username} ${strings.defaultCommands.add.alreadyExists.replace(
+              "$COMMAND_NAME",
+              commandName
+            )}`
+          );
           return;
         }
 
         commands.push({
           name: commandName,
           message: commandMessage,
-          author: userstate.username,
+          author: username,
           active: true,
         });
 
-        client.say(channel, `@${userstate.username} The command ${commandName} has been added!`);
+        client.say(
+          channel,
+          `@${username} ${strings.defaultCommands.add.success.replace(
+            "$COMMAND_NAME",
+            commandName
+          )}`
+        );
       })();
       break;
-    case "!remove":
+    case `!${strings.defaultCommands.remove.name}`:
       (() => {
         commandMessage = commandMessage.split(/\s/)[0];
         if (!commandMessage) {
-          client.say(channel, `@${userstate.username} Usage: !remove command`);
+          client.say(channel, `@${username} ${strings.defaultCommands.remove.usage}`);
           return;
         }
 
         commandMessage = (commandMessage.startsWith("!") ? "" : "!") + commandMessage.toLowerCase();
 
-        if ("!commands !add !remove".split(/\s/).includes(commandMessage)) {
+        if (
+          `!${strings.defaultCommands.commands.name} !${strings.defaultCommands.add.name} !${strings.defaultCommands.remove.name}`
+            .split(/\s/)
+            .includes(commandMessage)
+        ) {
           client.say(
             channel,
-            `@${userstate.username} The command ${commandMessage} cannot be removed!`
+            `@${username} ${strings.defaultCommands.remove.isBuiltIn.replace(
+              "$COMMAND_NAME",
+              commandMessage
+            )}`
           );
           return;
         }
@@ -191,10 +215,12 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 
         command = command[0];
 
-        if (command.author !== userstate.username) {
+        if (command.author !== username) {
           client.say(
             channel,
-            `@${userstate.username} The command ${commandMessage} cannot be removed. @${command.author} is the author!`
+            `@${username} ${strings.defaultCommands.remove.isNotAuthor
+              .replace("$COMMAND_NAME", commandMessage)
+              .replace("$COMMAND_AUTHOR", command.author)}`
           );
           return;
         }
@@ -205,7 +231,10 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 
         client.say(
           channel,
-          `@${userstate.username} The command ${commandMessage} has been removed!`
+          `@${username} ${strings.defaultCommands.remove.success.replace(
+            "$COMMAND_NAME",
+            commandMessage
+          )}`
         );
       })();
       break;

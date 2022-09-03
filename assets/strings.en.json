@@ -1,0 +1,22 @@
+{
+  "greetings": ["Hello, $VIEWER_NAME HeyGuys", "Welcome to the stream, $VIEWER_NAME HeyGuys"],
+  "defaultCommands": {
+    "commands": {
+      "name": "commands",
+      "message": "The following commands are available"
+    },
+    "add": {
+      "name": "add",
+      "usage": "Usage: !add command message",
+      "alreadyExists": "The command $COMMAND_NAME already exists!",
+      "success": "The command $COMMAND_NAME has been added!"
+    },
+    "remove": {
+      "name": "remove",
+      "usage": "Usage: !remove command",
+      "isBuiltIn": "The command $COMMAND_NAME cannot be removed!",
+      "isNotAuthor": "The command $COMMAND_NAME cannot be removed. @$COMMAND_AUTHOR is the author!",
+      "success": "The command $COMMAND_NAME has been removed!"
+    }
+  }
+}

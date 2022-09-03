@@ -4,5 +4,6 @@
   "channel": "#channel",
   "verbose": true,
   "commands": "commands.example.json",
-  "greetNewViewers": true
+  "greetNewViewers": true,
+  "language": "en"
 }

@@ -9,10 +9,11 @@
 - Easy configuration using JSON files
 - Users in chat can create custom commands
   - Using `!add` or `!remove`
-- Viewers writing their first message in current stream session are greeted
+- Viewers writing their first message in current stream session are optionally greeted with e.g.
   - Welcome to the stream, `username` HeyGuys
 - Verbose option to toggle whether chat bot can send messages to chat
 - Chat log of stream in command-line
+- Different languages
 
 ## Installation and Setup
 
@@ -32,6 +33,7 @@ The config file contains the following properties:
 - `verbose`: Whether to send messages to chat
 - `commands`: Path to command database file
 - `greetNewViewers`: Whether to send a greeting to new viewers
+- `language`: Currently either `en` or `de` (changes default command localization)
 
 ## Build-in Commands
 
