@@ -31,6 +31,7 @@ The config file contains the following properties:
 - `channel`: Channel name
 - `verbose`: Whether to send messages to chat
 - `commands`: Path to command database file
+- `greetNewViewers`: Whether to send a greeting to new viewers
 
 ## Build-in Commands
 

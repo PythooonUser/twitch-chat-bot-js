@@ -3,5 +3,6 @@
   "password": "oauth:abcdefghijklmnopqrstuvwxyz1234",
   "channel": "#channel",
   "verbose": true,
-  "commands": "commands.example.json"
+  "commands": "commands.example.json",
+  "greetNewViewers": true
 }

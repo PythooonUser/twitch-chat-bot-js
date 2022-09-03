@@ -68,7 +68,11 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     return;
   }
 
-  if (!viewers.includes(userstate.username) && "#" + userstate.username != config.channel) {
+  if (
+    config.greetNewViewers &&
+    !viewers.includes(userstate.username) &&
+    "#" + userstate.username !== config.channel
+  ) {
     viewers.push(userstate.username);
     client.say(channel, `Welcome to the stream, ${userstate["display-name"]} HeyGuys`);
   }
