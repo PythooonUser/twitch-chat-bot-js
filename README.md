@@ -34,6 +34,6 @@ The config file contains the following properties:
 
 ## Build-in Commands
 
-- `!add`
-- `!remove`
+- `!add command message`
+- `!remove command`
 - `!commands`
