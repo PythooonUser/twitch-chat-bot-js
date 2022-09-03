@@ -68,15 +68,9 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
     return;
   }
 
-  if (
-    !viewers.includes(userstate.username) &&
-    "#" + userstate.username != config.channel
-  ) {
+  if (!viewers.includes(userstate.username) && "#" + userstate.username != config.channel) {
     viewers.push(userstate.username);
-    client.say(
-      channel,
-      `Welcome to the stream, ${userstate["display-name"]} HeyGuys`
-    );
+    client.say(channel, `Welcome to the stream, ${userstate["display-name"]} HeyGuys`);
   }
 
   if (!commandMessage.startsWith("!")) {
@@ -93,14 +87,14 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
           .split(/\s/)
           .concat(
             commands
-              .map(c => {
+              .map((c) => {
                 if (c.active) {
                   return c.name;
                 } else {
                   return null;
                 }
               })
-              .filter(name => {
+              .filter((name) => {
                 return name !== null;
               })
           )
@@ -139,22 +133,19 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
 
         let commandNames = "!commands !add !remove".split(/\s/).concat(
           commands
-            .map(command => {
+            .map((command) => {
               if (!command.active) {
                 return null;
               }
               return command.name;
             })
-            .filter(name => {
+            .filter((name) => {
               return name !== null;
             })
         );
 
         if (commandNames.includes(commandName)) {
-          client.say(
-            channel,
-            `@${userstate.username} The command ${commandName} already exists!`
-          );
+          client.say(channel, `@${userstate.username} The command ${commandName} already exists!`);
           return;
         }
 
@@ -165,10 +156,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
           active: true,
         });
 
-        client.say(
-          channel,
-          `@${userstate.username} The command ${commandName} has been added!`
-        );
+        client.say(channel, `@${userstate.username} The command ${commandName} has been added!`);
       })();
       break;
     case "!remove":
@@ -179,9 +167,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
           return;
         }
 
-        commandMessage =
-          (commandMessage.startsWith("!") ? "" : "!") +
-          commandMessage.toLowerCase();
+        commandMessage = (commandMessage.startsWith("!") ? "" : "!") + commandMessage.toLowerCase();
 
         if ("!commands !add !remove".split(/\s/).includes(commandMessage)) {
           client.say(
@@ -191,7 +177,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
           return;
         }
 
-        let command = commands.filter(c => {
+        let command = commands.filter((c) => {
           return c.name === commandMessage && c.active;
         });
 
@@ -209,7 +195,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
           return;
         }
 
-        commands = commands.filter(c => {
+        commands = commands.filter((c) => {
           return c.name !== command.name;
         });
 
@@ -221,7 +207,7 @@ client.on("chat", (channel, userstate, commandMessage, self) => {
       break;
     default:
       (() => {
-        let command = commands.filter(c => {
+        let command = commands.filter((c) => {
           return c.name === commandName && c.active;
         });
 
