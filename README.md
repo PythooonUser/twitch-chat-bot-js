@@ -17,18 +17,20 @@
 ## Installation and Setup
 
 1. Create configuration file `app.cfg.json` based on `app.cfg.json.dist` contents and **adjust based on your needs**
-1. Create command database file `commands.json` based on `commands.json.dist` contents for your default commands. In addition all user commands will be saved here
+1. Create command database file `commands.json` based on `commands.json.dist` contents for your default commands. In addition all user created commands will be saved here
 1. Install dependencies using `$ npm install`
 1. Run chat bot using `$ node app.js`
 1. Stop chat bot by using keyboard interrupt `Ctrl+C`
 
+Note: In case you are not interested in running `node` everytime, you can simply build a Windows executable using `$ npm run build`.
+
 The config file contains the following properties:
 
-- username: Twitch bot username
-- password: Twitch bot password
-- channel: Channel name
-- verbose: Whether to send messages to chat
-- commands: Path to command database file
+- `username`: Twitch bot username
+- `password`: Twitch bot password
+- `channel`: Channel name
+- `verbose`: Whether to send messages to chat
+- `commands`: Path to command database file
 
 ## Build-in Commands
 
